@@ -9,11 +9,11 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 df=pd.read_csv('student_performance_dataset.csv')
 
-# print(df.head())
-# df.info()
-# print(df.describe())
-# print(df.isnull().sum())
-# print(df.duplicated().sum())
+print(df.head())
+df.info()
+print(df.describe())
+print(df.isnull().sum())
+print(df.duplicated().sum())
 
 plt.scatter(df['Study_Hours_per_Week'], df['Final_Exam_Score'])
 plt.xlabel('Hours Studied per Week') 
@@ -61,6 +61,7 @@ from sklearn.preprocessing import PolynomialFeatures
 poly=PolynomialFeatures(degree=3)
 X_train_poly=poly.fit_transform(X_train)
 X_test_poly=poly.transform(X_test)
+
 model=LinearRegression()
 model.fit(X_train_poly, y_train)
 y_pred = model.predict(X_test_poly)
@@ -71,32 +72,3 @@ print("R-squared:", r2)
 
 # Save the model
 joblib.dump(model, 'student_performance_model.pkl')
-
-
-import numpy as np
-import joblib
-from sklearn.preprocessing import PolynomialFeatures
-
-# 1️⃣ Load the trained model
-model = joblib.load('student_performance_model.pkl')
-
-# 2️⃣ Prepare PolynomialFeatures transformer (degree must match training)
-poly = PolynomialFeatures(degree=3)
-
-# 3️⃣ Ask user for input
-study_hours = float(input("Enter Study Hours per Week: "))
-attendance = float(input("Enter Attendance Rate (0-100): "))
-past_scores = float(input("Enter Past Exam Scores (average): "))
-extracurricular = input("Participates in Extracurricular Activities? (Yes/No): ")
-
-# Convert 'Yes'/'No' to 1/0
-extracurricular = 1 if extracurricular.strip().lower() == 'yes' else 0
-
-# 4️⃣ Create input array and apply polynomial transformation
-user_input = np.array([[study_hours, attendance, past_scores, extracurricular]])
-user_input_poly = poly.fit_transform(user_input)  # same degree as training
-
-# 5️⃣ Predict final exam score
-predicted_score = model.predict(user_input_poly)
-
-print(f"Predicted Final Exam Score: {predicted_score[0]:.2f}")
